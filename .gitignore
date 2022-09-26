@@ -1,0 +1,5 @@
+# Anything in this fill will not get pushes to Github
+
+# Ignore node_moduels so it doesn't get pushed
+node_modules
+.env
