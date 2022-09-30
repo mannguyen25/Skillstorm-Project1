@@ -19,10 +19,7 @@ const findWarehouseById = async id => {
 
 const findWarehouseItems = async id => {
     try {
-        const warehouse = await findWarehouseById(id);
-        // fill in the item objectId with the actual item object
-        await warehouse.populate('inventory.item');
-        return warehouse.inventory;
+        return await findWarehouseById(id).populate('inventory.item').inventory;
     } catch (err) {
         throw { status: 500, msg: err.message };
     }
