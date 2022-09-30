@@ -32,11 +32,6 @@ const warehouseSchema = new Schema({
     },
   });
 
-
-// warehouseSchema.virtual('currCapacity').get(function() {
-//     return this.inventory.reduce((previousValue, currentValue) => previousValue.qty + currentValue.qty);
-// });
-
 const Warehouse = mongoose.model("Warehouse", warehouseSchema);
 
 module.exports = Warehouse;
