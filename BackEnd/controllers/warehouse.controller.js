@@ -24,10 +24,14 @@ const findWarehouseItems = async id => {
         throw { status: 500, msg: err.message };
     }
 }
+
+
 const createWarehouse = async warehouseToSave => {
     try {
         const warehouse = new Warehouse(warehouseToSave);
         warehouse.currCapacity = warehouse.inventory.reduce((previousValue, currentValue) => previousValue.qty + currentValue.qty);
+        // capacity check
+        if (warehouse.currCapacity > warehouse.capacity) throw { status: 400, msg: 'You cannot have more items than the warehouse capacity. Modify your inventory.' };
         await warehouse.save();
         return warehouse;
     } catch (err) {
@@ -37,6 +41,9 @@ const createWarehouse = async warehouseToSave => {
 
 const updateWarehouse = async (id, warehouseToUpdate) => {
     try {
+        warehouse = await Warehouse.findById(id);
+        // capacity check
+        if (warehouse.currCapacity > warehouse.capacity) throw { status: 400, msg: 'You cannot have more items than the warehouse capacity. Modify your inventory.' };
         await Warehouse.findByIdAndUpdate(id, warehouseToUpdate);
     } catch (error) {
         throw { status: 400, msg: error};

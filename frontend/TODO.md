@@ -1,0 +1,6 @@
+- [x] Implement CRUD to backend
+  - [x] Create items
+  - [x] Create warehouses
+    - [x] capacity check
+- [ ] Get data on frontend from mongo
+- [ ] Implement Search Bar frontend

@@ -27,8 +27,8 @@ const warehouseSchema = new Schema({
                 }
             }
         }],
-        validate: [inventoryArray => inventoryArray.reduce((prev, curr) => prev.qty + curr.qty) < 100
-        , `Must be less than the capacity of 100`]
+        // validate: [inventoryArray => inventoryArray.reduce((prev, curr) => prev.qty + curr.qty) < 100
+        // , `Must be less than the capacity of 100`]
     },
   });
 
