@@ -2,5 +2,8 @@
   - [x] Create items
   - [x] Create warehouses
     - [x] capacity check
-- [ ] Get data on frontend from mongo
-- [ ] Implement Search Bar frontend
+- [ ] Set up Home page
+- [ ] Get data on frontend from mongo using axios
+  - [ ] Implement CRUD like table
+  - [ ] Implement Search Bar
+  - [ ] Redesign Style
