@@ -1,45 +1,51 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { DataGrid, GridColDef, GridValueGetterParams } from '@mui/x-data-grid';
+import Box from '@mui/material/Box';
+import Stack from '@mui/material/Stack';
+import Button from '@mui/material/Button';
+import { DataGrid } from '@mui/x-data-grid';
+import { renderProgress } from "../components/ProgressBar";
+import { createTheme } from "@mui/material/styles";
+const defaultTheme = createTheme();
 
 const columns = [
-  { field: 'id', headerName: 'ID', width: 90 },
+  { field: '_id', headerName: 'ID', width: 300 },
   {
-    field: 'firstName',
-    headerName: 'First name',
-    width: 150,
-    editable: true,
-  },
-  {
-    field: 'lastName',
-    headerName: 'Last name',
-    width: 150,
-    editable: true,
-  },
-  {
-    field: 'age',
-    headerName: 'Age',
+    field: 'currCapacity',
+    headerName: 'Current Capacity',
     type: 'number',
-    width: 110,
+    headerAlign: 'left',
+    align: 'left',
+    width: 150,
     editable: true,
   },
   {
-    field: 'fullName',
-    headerName: 'Full name',
-    description: 'This column has a value getter and is not sortable.',
-    sortable: false,
-    width: 160,
-    valueGetter: params =>
-      `${params.row.firstName || ''} ${params.row.lastName || ''}`,
+    field: 'capacity',
+    headerName: 'Max Capacity',
+    type: 'number',
+    headerAlign: 'left',
+    align: 'left',
+    width: 150,
+    editable: true,
   },
+  {
+    field: "filledQuantity",
+    headerName: "Filled Quantity",
+    renderCell: renderProgress,
+    type: 'number',
+    width: 200,
+    valueGetter: function name(params) {
+      return params.row.currCapacity / params.row.capacity;
+    }
+  }
 ];
 
-const Warehouse = ({warehouse: {_id, capacity, currCapacity}}) => {
-    return [_id, capacity, currCapacity]
-}
+// const Warehouse = ({warehouse: {_id, capacity, currCapacity}}) => {
+//     return [_id, capacity, currCapacity]
+// }
 
-export const warehouseList = () => {
-    const [warehouseList, setWarehouseList] = useState([]);
+export const WarehouseList = () => {
+  const [warehouseList, setWarehouseList] = useState([]);
     
     // React does NOT support making this callback asynchronous
     // So you MUST use .then()/.catch() OR have it call another async function to use await
@@ -49,11 +55,59 @@ export const warehouseList = () => {
         
         // Move this to store. Get the res.data and use dispatch(setwarehouseList(res.data))
         axios.get('http://localhost:9000/warehouses')
-            .then(res => { setWarehouseList(res.data); console.log(res.data) })
+            .then(res => { setWarehouseList(res.data)})
             .catch(err => console.error(err)); // This could easily be to render an error display
     }, []);
     return (
-    <DataGrid columns={[{ field: 'name', editable: true }]} />
+      <>
+        <h1 style={{
+          textAlign: 'center'
+        }}>Warehouses</h1>
+        <Box
+        sx = {{
+          margin: '2rem auto',
+          height: 300,
+          width: '35%',
+          '.root': {
+            border: `1px solid ${defaultTheme.palette.primary.main}`,
+            position: "relative",
+            overflow: "hidden",
+            width: "100%",
+            height: 26,
+            borderRadius: 2
+          },
+          '.value': {
+            position: "absolute",
+            lineHeight: "24px",
+            width: "100%",
+            display: "flex",
+            justifyContent: "center"
+          },
+          '.bar': {
+            height: "100%",
+            '&.low': {
+              backgroundColor: "#088208a3"
+            },
+            '&.medium': {
+              backgroundColor: "#efbb5aa3"
+            },
+            '&.high': {
+              backgroundColor: "#f44336"
+            }
+          }
+        }}
+        >
+          <DataGrid 
+          columns={columns}
+          getRowId={row => row._id}
+          getRowClassName={(params) =>
+            params.indexRelativeToCurrentPage % 2 === 0 ? 'even' : 'odd'
+          }
+          rows={warehouseList}
+          experimentalFeatures={{ newEditingApi: true }}
+          />
+        </Box>
+      </>
 
     )
 }
