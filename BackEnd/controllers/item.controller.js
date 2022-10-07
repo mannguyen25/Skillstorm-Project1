@@ -55,5 +55,5 @@ const updateItem = async (id, itemToUpdate) => {
 
 const deleteItem = async id => await Item.findByIdAndDelete(id);
 
-const deleteItemByUPC = async upc => await Item.findOneAndDelete({UPC: upc});;
+const deleteItemByUPC = async upc => await Item.findOneAndDelete({UPC: upc});
 module.exports = { findAllItems, createItem, findItemByUPC, findItemById, updateItemByUPC, updateItem, deleteItemByUPC, deleteItem };
