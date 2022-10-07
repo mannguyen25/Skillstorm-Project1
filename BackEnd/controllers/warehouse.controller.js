@@ -1,7 +1,7 @@
 const Warehouse = require('../models/Warehouse.model');
 // populate will automatically lookup the referred documents so long as there's a ref property
 const findAllWarehouses = async () => {
-    const warehouses = await Warehouse.find().select('capacity currCapacity');
+    const warehouses = await Warehouse.find();
     return warehouses;
 };
 
@@ -41,9 +41,8 @@ const createWarehouse = async warehouseToSave => {
 
 const updateWarehouse = async (id, warehouseToUpdate) => {
     try {
-        warehouse = await Warehouse.findById(id);
-        // capacity check
-        if (warehouse.currCapacity > warehouse.capacity) throw { status: 400, msg: 'You cannot have more items than the warehouse capacity. Modify your inventory.' };
+        warehouseToUpdate.currCapacity = warehouseToUpdate.inventory.reduce((previousValue, currentValue) => previousValue.qty + currentValue.qty);
+        if (warehouseToUpdate.currCapacity > warehouseToUpdate.capacity) throw { status: 400, msg: 'You cannot have more items than the warehouse capacity. Modify your inventory.' };
         await Warehouse.findByIdAndUpdate(id, warehouseToUpdate);
     } catch (error) {
         throw { status: 400, msg: error};

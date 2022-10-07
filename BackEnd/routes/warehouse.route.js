@@ -51,7 +51,7 @@ router.post('/', async (req, res) => {
 router.put('/:id', async (req, res) => {
     try {
         const warehouse = await updateWarehouse(req.params.id, req.body);
-        res.status(204).json(warehouse);
+        res.status(200).json(warehouse);
     } catch (err) {
         // Rejected Promise AKA no Pokemon found
         console.log(err);
