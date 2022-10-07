@@ -71,21 +71,13 @@ router.put('/upc/:upc', async (req, res) => {
 
 // delete an item by id
 router.delete('/:id', async (req, res) => {
-    try {
-        await deleteItem(req.params.id);
-        res.status(200).json(item);
-    } catch (err) {
-        res.status(err?.status ?? 500).json(err);
-    }
+    await deleteItem(req.params.id);
+    res.send();
 });
 
 // delete an item by UPC
 router.delete('/upc/:upc', async (req, res) => {
-    try {
         await deleteItemByUPC(req.params.upc);
-        res.status(200).json(item);
-    } catch (err) {
-        res.status(err?.status ?? 500).json(err);
-    }
+        res.send()
 });
 module.exports = router;

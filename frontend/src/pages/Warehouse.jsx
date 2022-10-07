@@ -1,13 +1,10 @@
 import { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
-// import Box from '@mui/material/Box';
-// import Stack from '@mui/material/Stack';
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, Stack, IconButton } from "@mui/material";
 import { DataGrid } from '@mui/x-data-grid';
 import { renderProgress, Actions } from "../components";
 import { useTheme } from '@mui/material/styles';
-
-
+import DeleteIcon from '@mui/icons-material/Delete';
 // const Warehouse = ({warehouse: {_id, capacity, currCapacity}}) => {
 //     return [_id, capacity, currCapacity]
 // }
@@ -15,6 +12,7 @@ import { useTheme } from '@mui/material/styles';
 export const WarehouseList = () => {
   const [warehouseList, setWarehouseList] = useState([]);
   const [rowId, setRowId] = useState(null);
+  const [pageSize, setPageSize] = useState(25);
   const theme = useTheme();
   useEffect(() => {
       axios.get('http://localhost:9000/warehouses')
@@ -27,7 +25,8 @@ export const WarehouseList = () => {
       { 
         field: '_id', 
         headerName: 'ID', 
-        width: 300,
+        flex: 1,
+        minWidth: 200,
         renderCell: (params) => (<a href={`http://localhost:9000/warehouses`}>{params.row._id}</a>)
       },
       {
@@ -36,7 +35,7 @@ export const WarehouseList = () => {
         type: 'number',
         headerAlign: 'left',
         align: 'left',
-        width: 150,
+        flex: 1,
       },
       {
         field: 'capacity',
@@ -44,7 +43,7 @@ export const WarehouseList = () => {
         type: 'number',
         headerAlign: 'left',
         align: 'left',
-        width: 150,
+        flex: 1,
         editable: true
       },
       {
@@ -53,7 +52,8 @@ export const WarehouseList = () => {
         renderCell: renderProgress,
         headerAlign: 'center',
         type: 'number',
-        width: 200,
+        minWidth: 80,
+        flex: 1,
         valueGetter: (params) => params.row.currCapacity / params.row.capacity
       },
       {
@@ -61,9 +61,13 @@ export const WarehouseList = () => {
         headerName: "Actions",
         headerAlign: 'center',
         align: 'center',
-        width: 200,
+        flex: 1,
+        minWidth: 150,
         renderCell: params => (
-          <Actions {...{params, rowId, setRowId}}/>
+          <Stack direction="row" spacing={2}>
+            <Actions {...{params, rowId, setRowId}}/>
+            <IconButton onClick={() => handleDeleteRow({...{params}})}><DeleteIcon/></IconButton>
+          </Stack>
         )
       },
       {
@@ -74,21 +78,21 @@ export const WarehouseList = () => {
   );
 
 
-
-  // const handleDeleteRow = () => {
-  //   const rowIds = apiRef.current.getAllRowIds();
-  //   const rowId = randomArrayItem(rowIds);
-
-  //   apiRef.current.updateRows([{ id: rowId, _action: 'delete' }]);
-  // };
+  const handleDeleteRow = async ({params}) => {
+    await axios.delete(`http://localhost:9000/warehouses/${params.row._id}`)
+    .then(() => {
+      setWarehouseList(warehouseList.filter(warehouse => params.row._id !== warehouse._id))
+    })
+    .catch(err => console.error(err));
+  };
 
     return (
       <>
         <Box      
         sx = {{
           margin: '2rem auto',
-          height: 300,
-          width: '65%',
+          height: '30vh',
+          width: '75%',
           a: {
             textDecoration: 'none',
             color: theme.palette.primary.dark,
@@ -148,6 +152,9 @@ export const WarehouseList = () => {
               color: 'primary.main',
             },
           }}
+          pageSize={pageSize}
+          onPageSizeChange={(newPage) => setPageSize(newPage)}
+          pagination
           columns={columns}
           checkboxSelection
           getRowId={row => row._id}

@@ -64,7 +64,7 @@ router.put('/:id', async (req, res) => {
 router.delete('/:id', async (req, res) => {
     try {
         await deleteWarehouse(req.params.id);
-        res.status(200).json(warehouse);
+        res.send();
     } catch (err) {
         res.status(err?.status ?? 500).json(err);
     }

@@ -53,19 +53,7 @@ const updateItem = async (id, itemToUpdate) => {
     }
 };
 
-const deleteItem = async id => {
-    try {
-        await Item.findByIdAndDelete(id);
-    } catch (error) {
-        throw { status: 400, msg: error};
-    }
-}
+const deleteItem = async id => await Item.findByIdAndDelete(id);
 
-const deleteItemByUPC = async upc => {
-    try {
-        await Item.findOneAndDelete({UPC: upc});
-    } catch (error) {
-        throw { status: 400, msg: error};
-    }
-};
+const deleteItemByUPC = async upc => await Item.findOneAndDelete({UPC: upc});;
 module.exports = { findAllItems, createItem, findItemByUPC, findItemById, updateItemByUPC, updateItem, deleteItemByUPC, deleteItem };
