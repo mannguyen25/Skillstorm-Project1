@@ -1,10 +1,12 @@
 import { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
-import { Box, Typography, Stack, IconButton } from "@mui/material";
+import { Box, Typography, Stack, IconButton, Zoom, Fab } from "@mui/material";
 import { DataGrid } from '@mui/x-data-grid';
 import { renderProgress, Actions } from "../components";
 import { useTheme } from '@mui/material/styles';
 import DeleteIcon from '@mui/icons-material/Delete';
+import AddIcon from '@mui/icons-material/Add';
+
 // const Warehouse = ({warehouse: {_id, capacity, currCapacity}}) => {
 //     return [_id, capacity, currCapacity]
 // }
@@ -13,7 +15,6 @@ export const WarehouseList = () => {
   const [warehouseList, setWarehouseList] = useState([]);
   const [rowId, setRowId] = useState(null);
   const [pageSize, setPageSize] = useState(25);
-  const [selectedRows, setSelectedRows] = useState([]);
   const theme = useTheme();
   useEffect(() => {
       axios.get('http://localhost:9000/warehouses')
@@ -66,7 +67,7 @@ export const WarehouseList = () => {
         minWidth: 150,
         renderCell: params => (
           <Stack direction="row" spacing={2}>
-            <Actions {...{params, rowId, setRowId}}/>
+            <Actions {...{params, rowId, setRowId}}>{'warehouses'}</Actions>
             <IconButton onClick={() => handleDeleteRow({...{params}})}><DeleteIcon/></IconButton>
           </Stack>
         )
@@ -92,7 +93,8 @@ export const WarehouseList = () => {
         <Box      
         sx = {{
           margin: '2rem auto',
-          height: '30vh',
+          height: '60vh',
+          minHeight: '40vh',
           width: '75%',
           display: 'flex',
           flexDirection: 'column',
@@ -145,7 +147,7 @@ export const WarehouseList = () => {
           component='h3'
           sx={{textAlign: 'center', ml: 2, mb:3}}
             >
-            Manage Warehouse
+            Manage Warehouses
           </Typography>
           <DataGrid 
           sx={{
@@ -160,22 +162,25 @@ export const WarehouseList = () => {
           onPageSizeChange={(newPage) => setPageSize(newPage)}
           pagination
           columns={columns}
-          checkboxSelection
           getRowId={row => row._id}
           // Handle alternating table rows
           getRowClassName={(params) =>
             params.indexRelativeToCurrentPage % 2 === 0 ? 'even' : 'odd'
           }
           rows={warehouseList}
-          experimentalFeatures={{ newEditingApi: true }}
+          experimentalFeatures={{ newEditingApi: true, lazyLoading: true }}
           onCellEditStop={(params) => setRowId(params.id)}
           columnVisibilityModel={{inventory: false}}
-          // Handle selects
-          onSelectionModelChange={ ids => {
-            const selectedIDs = new Set(ids);
-            setSelectedRows(warehouseList.filter(warehouse => selectedIDs.has(warehouse._id)));
-          }}
           />
+          <Zoom in={true} style={{ 'transitionDuration' : '800ms' }} unmountOnExit>
+            <Fab sx={{
+                position: 'absolute',
+                bottom: 60,
+                right: 60,}}
+                color="primary" aria-label="add" >
+                    <AddIcon />
+            </Fab>
+            </Zoom>
         </Box>
       </>
 

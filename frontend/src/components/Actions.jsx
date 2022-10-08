@@ -6,15 +6,24 @@ import { useTheme } from '@mui/material/styles';
 import CircularProgress from '@mui/material/CircularProgress';
 import axios from 'axios';
 import { useEffect } from "react";
-export const Actions = ({ params, rowId, setRowId }) => {
+
+
+export const Actions = ({ params, rowId, setRowId, children }) => {
     const theme = useTheme();
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
     const handleSubmit = async () => {
         setLoading(true);
         setTimeout( async () => {
-            const {capacity, inventory, _id} = params.row
-            const result = await axios.put(`http://localhost:9000/warehouses/${_id}`, {capacity, inventory})
+            let result;
+            if (children === 'warehouses'){
+              const {capacity, inventory, _id} = params.row
+              result = await axios.put(`http://localhost:9000/${children}/${_id}`, {capacity, inventory})
+            }
+            else if (children === 'items') {
+              const { _id, name, UPC, component, cost, brand, imgUrl} = params.row
+              result = await axios.put(`http://localhost:9000/${children}/${_id}`, {_id, name, UPC, component, cost, brand, imgUrl})           
+            }
             if (result) {
                 setSuccess(true);
                 setRowId(null);

@@ -9,11 +9,12 @@ import HomeIcon from '@mui/icons-material/Home';
 export function ButtonAppBar() {
   const theme = useTheme();
   const colorMode = useContext(ColorModeContext);
-  console.log(theme);
   return (
     <AppBar position="static"
       sx={{ 
-        height: '4vh', 
+        height: '5vh',
+        minHeight: '60px', 
+        maxHeight: '70px',
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',

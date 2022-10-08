@@ -2,7 +2,11 @@
   - [x] Create items
   - [x] Create warehouses
     - [x] capacity check
+  - [x] Update items
+  - [x] Delete items
+    - [x] remove orphan references
 - [ ] Set up Home page
+- [x] Set up Page Not Found
 - [ ] Get data on frontend from mongo using axios
   - [ ] Implement CRUD like table
   - [ ] Implement Search Bar

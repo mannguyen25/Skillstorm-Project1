@@ -1,6 +1,6 @@
 import './App.css';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { Home, WarehouseList, NotFound, Items } from "./pages";
+import { Home, WarehouseList, NotFound, ItemList } from "./pages";
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { useState, useMemo, createContext } from "react";
 import CssBaseline from '@mui/material/CssBaseline';
@@ -37,7 +37,7 @@ function App() {
           <Routes>
             <Route path="/" element={<Home/>}/>
             <Route path="/warehouses" element={<WarehouseList/>}/>
-            <Route path="/items" element={<Items/>}/>
+            <Route path="/items" element={<ItemList/>}/>
             <Route path="*" element={<NotFound/>}/>
           </Routes>
         </BrowserRouter>

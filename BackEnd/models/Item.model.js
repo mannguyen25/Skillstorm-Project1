@@ -10,7 +10,7 @@ const itemSchema = new Schema({
       required: true
     },
     UPC: {
-      type: Number,
+      type: String,
       required: true,
     },
     component: String,
@@ -20,11 +20,9 @@ const itemSchema = new Schema({
   });
 
 
-// If we remove an item from our overall inventory, they will be removed from the warehouses
-// Using the pre hook method of mongoose
 itemSchema.pre('findOneAndDelete', async function (next) {
   const id = this.getQuery()._id;
-  await Warehouse.updateMany({'inventory.item': id}, { $pull: { inventory: { item: id } } }, next);
+  await Warehouse.updateMany({}, { $pull: { inventory: { item: id} } });
 })
 
 const Item = mongoose.model("Item", itemSchema);
