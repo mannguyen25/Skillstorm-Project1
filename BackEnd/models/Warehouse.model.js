@@ -17,18 +17,17 @@ const warehouseSchema = new Schema({
     inventory: {
         type: [{
             type: {
-                item: {
+                _id: {
                     type: mongoose.Types.ObjectId,
-                    ref: 'Item' 
+                    ref: 'Item',
+                    alias: 'item'
                 },
                 qty: {
                     type: Number,
                     default: 0
                 }
-            }
+            },
         }],
-        // validate: [inventoryArray => inventoryArray.reduce((prev, curr) => prev.qty + curr.qty) < 100
-        // , `Must be less than the capacity of 100`]
     },
   });
 

@@ -1,5 +1,5 @@
 const Item = require('../models/Item.model');
-
+const Warehouse = require('../models/Warehouse.model')
 // populate will automatically lookup the referred documents so long as there's a ref property
 const findAllItems = async () => await Item.find();
 
@@ -53,7 +53,15 @@ const updateItem = async (id, itemToUpdate) => {
     }
 };
 
-const deleteItem = async id => await Item.findByIdAndDelete(id);
+const deleteItem = async id => {
+    const warehouseList = await Warehouse.find({'inventory._id': id});
+    await Item.findByIdAndDelete(id)
+    for (const warehouse of warehouseList) {
+        const warehouseToUpdate = await Warehouse.findById(warehouse._id);
+        warehouseToUpdate.currCapacity = warehouseToUpdate.inventory.reduce((prev, curr) => prev + curr.qty, 0);
+        await Warehouse.findByIdAndUpdate(warehouseToUpdate._id, warehouseToUpdate);
+    }
+};
 
 const deleteItemByUPC = async upc => await Item.findOneAndDelete({UPC: upc});
 module.exports = { findAllItems, createItem, findItemByUPC, findItemById, updateItemByUPC, updateItem, deleteItemByUPC, deleteItem };

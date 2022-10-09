@@ -18,13 +18,14 @@ const itemSchema = new Schema({
     component: String,
     cost: Number,
     brand: String,
-    imgUrl: String
+    imgUrl: String,
   });
 
 
 itemSchema.pre('findOneAndDelete', async function (next) {
   const id = this.getQuery()._id;
-  await Warehouse.updateMany({}, { $pull: { inventory: { item: id} } });
+  await Warehouse.updateMany({}, { $pull: { inventory: { _id: id} } });
+  next();
 })
 
 const Item = mongoose.model("Item", itemSchema);

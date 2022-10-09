@@ -12,11 +12,12 @@ export const ItemList = () => {
   const [rowId, setRowId] = useState(null);
   const [pageSize, setPageSize] = useState(25);
   const theme = useTheme();
+
   useEffect(() => {
       axios.get('http://localhost:9000/items')
           .then(res => { setItemList(res.data)})
           .catch(err => console.error(err)); 
-  }, [itemList]);
+  }, []);
 
   const columns = useMemo(() =>
     [
@@ -124,7 +125,6 @@ export const ItemList = () => {
         setItemList(itemList.filter(item => params.row._id !== item._id))
       })
       .catch(err => console.error(err));
-      console.log(itemList)
       setLoading(false);
     }, 2000);
   };

@@ -29,7 +29,7 @@ export const WarehouseList = () => {
         headerName: 'ID', 
         flex: 1,
         minWidth: 200,
-        renderCell: (params) => (<a href={`http://localhost:9000/warehouses`}>{params.row._id}</a>)
+        renderCell: (params) => (<a href={`/warehouses/${params.row._id}`}>{params.row._id}</a>)
       },
       {
         field: 'currCapacity',

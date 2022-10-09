@@ -1,7 +1,8 @@
 export const Warehouse = ({id}) => {
     return (
         <div>
-            Warehouse Stuff
+            id
+            {window.location.pathname.split('/')[2]}
         </div>
     )
 }
