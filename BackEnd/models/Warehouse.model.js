@@ -27,6 +27,8 @@ const warehouseSchema = new Schema({
                     default: 0
                 }
             },
+            unique: true,
+            dropDups: true
         }],
     },
   });

@@ -1,37 +1,68 @@
-import {useState} from 'react';
+import {useState, useMemo} from 'react';
 import {Fab, Zoom, Button, TextField, Dialog, DialogActions, DialogContent, DialogTitle,
-        OutlinedInput, InputLabel, InputAdornment, FormControl, MenuItem, Select} from '@mui/material';
+        List, ListItem, ListItemText, IconButton, Box,
+      } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
+import RemoveIcon from '@mui/icons-material/Remove';
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from '@hookform/resolvers/yup';
 import {warehouseSchema} from '../validation/warehouseSchema'
 import axios from 'axios';
+import { idID } from '@mui/material/locale';
+
+const Item = ({item: {_id, name, imgUrl, cost}, setInventory}) => {
+  return (
+    <ListItem
+    secondaryAction={
+      <TextField 
+        label='qty'
+        type='number'
+        inputProps={{min: 0}}
+        sx={{maxWidth: 80, m: 1}}
+        onChange={e => setInventory(
+          inventory => inventory.map(
+            item => {
+              return item._id === _id? {...item, qty: e.target.value} : item
+            }
+          ))}
+      />
+    }
+    >
+       <ListItemText primary={name} />
+    </ListItem>
+  )
+}
 
 export const WarehouseForm = ({setWarehouseList}) => {
     const { handleSubmit, control, formState: { isValid }} = useForm({
         defaultValues: {
-            name: '',
-            brand: '',
-            UPC: '',
-            cost: 0,
-            component: '',
-            imgUrl: ''
+            capacity: 0,
+            inventory: []
         },
         resolver: yupResolver(warehouseSchema),
         mode: "onChange"
     });
+
     const onSubmit = async data => {
       try{
+        data.inventory = inventory;
         console.log(data);
-        const res = await axios.post('http://localhost:9000/items', data)
-        setWarehouseList(warehouseList => [...warehouseList, res.data]);
-        setOpen(false);
+        // const res = await axios.post('http://localhost:9000/warehouses', data)
+        // setWarehouseList(warehouseList => [...warehouseList, res.data]);
+        // setOpen(false);
       }
       catch (err) {
         console.error(err);
     }
     };
     const [open, setOpen] = useState(false);
+    const [itemList, setItemList] = useState([]);
+    const [inventory, setInventory] = useState([])
+    const item = useMemo(() => 
+    {axios.get('http://localhost:9000/items')
+      .then(res => {setItemList(res.data); setInventory(res.data.map(item => {return {_id: item._id, qty:0}}))})
+      .catch(err => console.error(err)); }, [open]
+    );
     const handleClickOpen = () => {
         setOpen(true);
       };
@@ -40,16 +71,60 @@ export const WarehouseForm = ({setWarehouseList}) => {
         setOpen(false);
       };
     return (
+    <>
     <Zoom in={true} style={{ 'transitionDuration' : '800ms' }}>
-    <Fab sx={{
-        position: 'absolute',
-        bottom: 60,
-        right: 60,}}
-        color="primary" aria-label="add"
-        onClick={handleClickOpen}
-        >
-            <AddIcon />
-    </Fab>
-    </Zoom>
+        <Fab sx={{
+            position: 'absolute',
+            bottom: 60,
+            right: 60,}}
+            color="primary" aria-label="add"
+            onClick={handleClickOpen}
+            >
+                <AddIcon />
+        </Fab>
+      </Zoom>
+      <Dialog open={open} onClose={handleClose} 
+        sx={{
+        '& .MuiTextField-root': { m: 1, width: '25ch' },}}>
+          <DialogTitle>Add Warehouse to Inventory</DialogTitle>
+          <DialogContent 
+            sx={{
+              display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-evenly'}}>
+                <Controller
+                  name='capacity'
+                  control={control}
+                  render={({ field: { onChange, value }, fieldState: { error } }) => (
+                    <TextField
+                      label="Capacity"
+                      required
+                      type='number'
+                      autoFocus
+                      margin="normal"
+                      value={value}
+                      onChange={onChange}
+                      error={!!error}
+                      helperText={error ? error.message : null}
+                      inputProps={{min: 0}}
+                    />
+                  )}
+                />
+                <Controller
+                  name='capacity'
+                  control={control}
+                  render={({ field: { onChange, value }, fieldState: { error } }) => (
+                    <List sx={{'.css-10hburv-MuiTypography-root' : {marginRight: '10ch', maxWidth: '50ch'},
+                    '.MuiListItem-root': {  marginBottom: 3},
+                  }}>
+                      {itemList.map(item => <Item item={item} setInventory={setInventory} key={item._id}/>)}
+                    </List>
+                  )}
+                />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleClose}>Cancel</Button>
+            <Button type="submit" onClick={handleSubmit(onSubmit)} disabled={!isValid}>Submit</Button>
+          </DialogActions>
+      </Dialog>
+    </>
     )
 }

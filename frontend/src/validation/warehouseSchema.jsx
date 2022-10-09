@@ -5,8 +5,8 @@ export const warehouseSchema = yup.object({
     inventory: yup.array()
         .of(
             yup.object().shape({
-                item: yup.string().required(),
-                qty: yup.number().positive(),
+                _id: yup.string().required(),
+                qty: yup.number().integer().positive(),
               })
         )
 })

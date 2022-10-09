@@ -1,21 +1,18 @@
 import { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
-import { Box, Typography, Stack, IconButton, Zoom, Fab } from "@mui/material";
+import { Box, Typography, Stack, IconButton } from "@mui/material";
 import { DataGrid } from '@mui/x-data-grid';
 import { renderProgress, Actions } from "../components";
 import { useTheme } from '@mui/material/styles';
 import DeleteIcon from '@mui/icons-material/Delete';
-import AddIcon from '@mui/icons-material/Add';
-
-// const Warehouse = ({warehouse: {_id, capacity, currCapacity}}) => {
-//     return [_id, capacity, currCapacity]
-// }
+import { WarehouseForm } from "../components";
 
 export const WarehouseList = () => {
   const [warehouseList, setWarehouseList] = useState([]);
   const [rowId, setRowId] = useState(null);
   const [pageSize, setPageSize] = useState(25);
   const theme = useTheme();
+  
   useEffect(() => {
       axios.get('http://localhost:9000/warehouses')
           .then(res => { setWarehouseList(res.data)})
@@ -172,7 +169,7 @@ export const WarehouseList = () => {
           onCellEditStop={(params) => setRowId(params.id)}
           columnVisibilityModel={{inventory: false}}
           />
-        
+        <WarehouseForm setWarehouseList={setWarehouseList}/>
         </Box>
       </>
 

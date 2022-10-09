@@ -22,7 +22,6 @@ export const ItemForm = ({setItemList}) => {
     });
     const onSubmit = async data => {
       try{
-        console.log(data);
         const res = await axios.post('http://localhost:9000/items', data)
         setItemList(itemList => [...itemList, res.data]);
         setOpen(false);
