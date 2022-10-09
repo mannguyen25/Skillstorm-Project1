@@ -172,15 +172,7 @@ export const WarehouseList = () => {
           onCellEditStop={(params) => setRowId(params.id)}
           columnVisibilityModel={{inventory: false}}
           />
-          <Zoom in={true} style={{ 'transitionDuration' : '800ms' }} unmountOnExit>
-            <Fab sx={{
-                position: 'absolute',
-                bottom: 60,
-                right: 60,}}
-                color="primary" aria-label="add" >
-                    <AddIcon />
-            </Fab>
-            </Zoom>
+        
         </Box>
       </>
 

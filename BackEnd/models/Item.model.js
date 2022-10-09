@@ -12,6 +12,8 @@ const itemSchema = new Schema({
     UPC: {
       type: String,
       required: true,
+      unique: true,
+      dropDups: true
     },
     component: String,
     cost: Number,

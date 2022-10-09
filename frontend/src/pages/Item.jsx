@@ -24,7 +24,6 @@ export const ItemList = () => {
         field: '_id', 
         headerName: 'ID', 
         flex: 1,
-        renderCell: (params) => (<a href={`http://localhost:9000/items`}>{params.row._id}</a>)
       },
       {
         field: 'imgUrl',
