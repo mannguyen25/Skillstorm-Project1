@@ -10,7 +10,7 @@ import axios from 'axios';
 
 export const ItemForm = ({setItemList}) => {
   const [loading, setLoading] = useState(false);
-    const { handleSubmit, control, formState: { isValid }} = useForm({
+    const { handleSubmit, control, formState: { isValid }, reset} = useForm({
         defaultValues: {
             name: '',
             brand: '',
@@ -32,8 +32,8 @@ export const ItemForm = ({setItemList}) => {
         catch (err) {
           console.error(err);
       }
-      setLoading(false)
-      setOpen(false);
+      setLoading(false);
+      handleClose();
       }, 1000);
     };
     const [open, setOpen] = useState(false);
@@ -43,6 +43,7 @@ export const ItemForm = ({setItemList}) => {
     
     const handleClose = () => {
         setOpen(false);
+        reset();
       };
     return (
     <>

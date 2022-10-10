@@ -1,6 +1,6 @@
 import {useState, useMemo} from 'react';
 import {Fab, Zoom, Button, TextField, Dialog, DialogActions, DialogContent, DialogTitle,
-        List, ListItem, ListItemText, Paper, Typography, LinearProgress
+        List, ListItem, ListItemText, Paper, Typography, LinearProgress, Alert
       } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { useForm, Controller } from "react-hook-form";
@@ -8,7 +8,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import {warehouseSchema} from '../validation/warehouseSchema'
 import axios from 'axios';
 
-const Item = ({item: {_id, name, imgUrl, cost}, setInventory}) => {
+const Item = ({item: {_id, name, imgUrl, cost}, setInventory, setError}) => {
   return (
     <ListItem
     secondaryAction={
@@ -17,12 +17,14 @@ const Item = ({item: {_id, name, imgUrl, cost}, setInventory}) => {
         type='number'
         inputProps={{min: 0}}
         sx={{maxWidth: 80, m: 1}}
-        onChange={e => setInventory(
+        onChange={e => {
+          setError(false);
+          setInventory(
           inventory => inventory.map(
             item => {
               return item._id === _id? {...item, qty: parseInt(e.target.value)} : item
             }
-          ))}
+          ))}}
       />
     }
     >
@@ -32,7 +34,7 @@ const Item = ({item: {_id, name, imgUrl, cost}, setInventory}) => {
 }
 
 export const WarehouseForm = ({setWarehouseList}) => {
-    const { handleSubmit, control, formState: { isValid }} = useForm({
+    const { handleSubmit, control, formState: { isValid }, reset} = useForm({
         defaultValues: {
             capacity: 0,
             inventory: []
@@ -51,12 +53,13 @@ export const WarehouseForm = ({setWarehouseList}) => {
             inventory: data.inventory
           })
           setWarehouseList(warehouseList => [...warehouseList, res.data]);
+          setLoading(false);
+          handleClose();
         }
         catch (err) {
-          console.error(err);
+          setError(true);
+          setLoading(false);
       }
-      setLoading(false);
-      setOpen(false);
     }, 1000);
 
     };
@@ -64,17 +67,21 @@ export const WarehouseForm = ({setWarehouseList}) => {
     const [open, setOpen] = useState(false);
     const [itemList, setItemList] = useState([]);
     const [inventory, setInventory] = useState([])
+    const [error, setError] = useState (false) 
     const item = useMemo(() => 
     {axios.get('http://localhost:9000/items')
       .then(res => {setItemList(res.data); setInventory(res.data.map(item => {return {_id: item._id, qty:0}}))})
-      .catch(err => console.error(err)); }, [open]
+      .catch(err => setError(true)); }, [open]
     );
     const handleClickOpen = () => {
+        setError(false)
         setOpen(true);
       };
     
     const handleClose = () => {
+        setError(false)
         setOpen(false);
+        reset();
       };
     return (
     <>
@@ -119,15 +126,19 @@ export const WarehouseForm = ({setWarehouseList}) => {
                 <List sx={{'.css-10hburv-MuiTypography-root' : {marginRight: '10ch', maxWidth: '50ch'},
                                     '.MuiListItem-root': {  marginBottom: 3},
                   }}>
-                    {itemList.map(item => <Item item={item} setInventory={setInventory} key={item._id}/>)}
+                    {itemList.map(item => <Item item={item} setInventory={setInventory} setError={setError} key={item._id}/>)}
                 </List>
               </Paper>
           </DialogContent>
           {loading && (
             <LinearProgress/>)}
+          {error && (
+            <Alert severity="error">Please increase capacity or decrease items.</Alert>
+          )
+          }
           <DialogActions>
             <Button onClick={handleClose}>Cancel</Button>
-            <Button type="submit" onClick={handleSubmit(onSubmit)} disabled={!isValid}>Submit</Button>
+            <Button type="submit" onClick={handleSubmit(onSubmit)} disabled={!isValid || error}>Submit</Button>
           </DialogActions>
       </Dialog>
     </>

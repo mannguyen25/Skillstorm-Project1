@@ -1,25 +1,13 @@
 const Item = require('../models/Item.model');
 const Warehouse = require('../models/Warehouse.model')
-// populate will automatically lookup the referred documents so long as there's a ref property
+
 const findAllItems = async () => await Item.find();
 
 const findItemById = async id => {
     try {
         const item = await Item.findById(id);
         if (item == null) {
-            throw {status: 204, msg: `No item with the upc ${upc} was found.`};
-        }
-        return item;
-    } catch (error) {
-        throw error;
-    }
-};
-
-const findItemByUPC = async upc => {
-    try {
-        const item = await Item.findOne({UPC: upc});
-        if (item == null) {
-            throw {status: 204, msg: `No item with the upc ${upc} was found.`};
+            throw {status: 204, msg: `No item with the upc ${id} was found.`};
         }
         return item;
     } catch (error) {
@@ -37,13 +25,6 @@ const createItem = async itemToSave => {
     }
 };
 
-const updateItemByUPC = async (upc, itemToUpdate) => {
-    try {
-        await Item.findOneAndUpdate({UPC: upc}, itemToUpdate);
-    } catch (error) {
-        throw { status: 400, msg: error};
-    }
-};
 
 const updateItem = async (id, itemToUpdate) => {
     try {
@@ -64,4 +45,4 @@ const deleteItem = async id => {
 };
 
 const deleteItemByUPC = async upc => await Item.findOneAndDelete({UPC: upc});
-module.exports = { findAllItems, createItem, findItemByUPC, findItemById, updateItemByUPC, updateItem, deleteItemByUPC, deleteItem };
+module.exports = { findAllItems, createItem, findItemById, updateItem, deleteItem };

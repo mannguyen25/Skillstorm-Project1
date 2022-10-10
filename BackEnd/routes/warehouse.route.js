@@ -70,7 +70,7 @@ router.delete('/:id/inventory/:itemId', async (req, res) => {
     }
 });
 
-// delete an warehouse
+// delete a warehouse
 router.delete('/:id', async (req, res) => {
     try {
         await deleteWarehouse(req.params.id);

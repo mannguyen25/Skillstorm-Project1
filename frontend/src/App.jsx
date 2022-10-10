@@ -1,4 +1,4 @@
-import './App.css';
+import './styles/0-base/App.css';
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Home, WarehouseList, NotFound, ItemList, Warehouse } from "./pages";
 import { ThemeProvider, createTheme } from '@mui/material/styles';

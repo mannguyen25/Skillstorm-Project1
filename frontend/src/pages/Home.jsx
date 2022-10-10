@@ -1,4 +1,4 @@
-import { Box, Typography, Slide, Card } from "@mui/material";
+import { Box, Typography, Slide } from "@mui/material";
 import { useTheme } from "@emotion/react";
 export const Home = () => {
     const theme = useTheme();

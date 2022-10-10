@@ -1,12 +1,12 @@
 import {useState, useMemo} from 'react';
 import {Fab, Zoom, Button, TextField, Dialog, DialogActions, DialogContent, DialogTitle,
-        List, ListItem, ListItemText, Paper, LinearProgress
+        List, ListItem, ListItemText, Paper, LinearProgress, Alert
       } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import axios from 'axios';
 import { useForm } from "react-hook-form";
 
-const Item = ({item: {_id, name, imgUrl, cost}, setInventoryCount}) => {
+const Item = ({item: {_id, name, imgUrl, cost}, setInventoryCount, setError}) => {
   return (
     <ListItem
     secondaryAction={
@@ -15,12 +15,14 @@ const Item = ({item: {_id, name, imgUrl, cost}, setInventoryCount}) => {
         type='number'
         inputProps={{min: 0}}
         sx={{maxWidth: 80, m: 1}}
-        onChange={e => setInventoryCount(
+        onChange={e => {
+          setError(false);
+          setInventoryCount(
             inventory => inventory.map(
               item => {
                 return item._id === _id? {...item, qty: parseInt(e.target.value)} : item
               }
-            ))}
+            ))}}
       />
     }
     >
@@ -41,6 +43,7 @@ export const AddItem = ({setData, warehouseID, setInventory}) => {
     const [loading, setLoading] = useState(false)
     const [itemList, setItemList] = useState([]);
     const [inventoryCount, setInventoryCount] = useState([])
+    const [error, setError] = useState(false);
     const item = useMemo(() => 
     {axios.get('http://localhost:9000/items')
       .then(res => {
@@ -50,10 +53,13 @@ export const AddItem = ({setData, warehouseID, setInventory}) => {
       .catch(err => console.error(err)); }, [open]
     );
     const handleClickOpen = () => {
+        setError(false);
         setOpen(true);
       };
     
     const handleClose = () => {
+        setError(false);
+        setLoading(false);
         setOpen(false);
       };
     const onSubmit = async (data) => {
@@ -76,16 +82,16 @@ export const AddItem = ({setData, warehouseID, setInventory}) => {
                 })
                 await axios.get(`http://localhost:9000/warehouses/${warehouseID}/inventory`)
                 .then(res => { setInventory(res.data.inventory)})
-                .catch(err => console.error(err));
+                .catch(() => setError(true));
                 await axios.get(`http://localhost:9000/warehouses/${warehouseID}`)
                 .then(res => { setData(res.data)})
-                .catch(err => console.error(err)); 
+                .catch(() => setError(true)); 
+                handleClose();
           }
             catch (err) {
-            console.error(err);
-            } 
-        setLoading(false);
-        setOpen(false);
+            setError(true);
+            setLoading(false);
+            }
         }, 1000);
     };
     return (
@@ -112,14 +118,15 @@ export const AddItem = ({setData, warehouseID, setInventory}) => {
                 <List sx={{'.css-10hburv-MuiTypography-root' : {marginRight: '10ch', maxWidth: '50ch'},
                                     '.MuiListItem-root': {  marginBottom: 3},
                   }}>
-                    {itemList.map(item => <Item item={item} setInventoryCount={setInventoryCount} key={item._id}/>)}
+                    {itemList.map(item => <Item item={item} setInventoryCount={setInventoryCount} setError={setError} key={item._id}/>)}
                 </List>
               </Paper>
           </DialogContent>
           {loading && (<LinearProgress/>)}
+          {error && (<Alert severity="error">There was something wrong with your input — change your quantities!</Alert>)}
           <DialogActions>
             <Button onClick={handleClose}>Cancel</Button>
-            <Button type="submit" onClick={handleSubmit(onSubmit)}>Submit</Button>
+            <Button type="submit" onClick={handleSubmit(onSubmit)} disabled={error}>Submit</Button>
           </DialogActions>
       </Dialog>
     </>

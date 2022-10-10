@@ -1,6 +1,6 @@
 const router = require('express').Router();
 const mongoose = require('mongoose');
-const { findAllItems, createItem, findItemByUPC, findItemById, updateItemByUPC, updateItem, deleteItemByUPC, deleteItem } = require('../controllers/item.controller');
+const { findAllItems, createItem, findItemById, updateItem, deleteItem } = require('../controllers/item.controller');
 
 
 // Find all Items
@@ -13,17 +13,7 @@ router.get('/', async (req, res) => {
     }
 });
 
-router.get('/upc/:upc', async (req, res) => {
-    try {
-        const item = await findItemByUPC(req.params.upc);
-        res.json(item);
-    } catch (err) {
-        // Rejected Promise AKA no Pokemon found
-        console.log(err);
-        res.status(err?.status).json(err);
-    }
-});
-
+// find a specific item
 router.get('/:id', async (req, res) => {
     try {
         const item = await findItemById(req.params.id);
@@ -57,17 +47,6 @@ router.put('/:id', async (req, res) => {
     }
 });
 
-// Update item by upc
-router.put('/upc/:upc', async (req, res) => {
-    try {
-        const item = await updateItemByUPC(req.params.upc, req.body);
-        res.status(204).json(item);
-    } catch (err) {
-        // Rejected Promise AKA no Pokemon found
-        console.log(err);
-        res.status(err?.status).json(err);
-    }
-});
 
 // delete an item by id
 router.delete('/:id', async (req, res) => {
@@ -75,9 +54,4 @@ router.delete('/:id', async (req, res) => {
     res.send();
 });
 
-// delete an item by UPC
-router.delete('/upc/:upc', async (req, res) => {
-        await deleteItemByUPC(req.params.upc);
-        res.send()
-});
 module.exports = router;
