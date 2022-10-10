@@ -1,6 +1,6 @@
 import {useState, useMemo} from 'react';
 import {Fab, Zoom, Button, TextField, Dialog, DialogActions, DialogContent, DialogTitle,
-        List, ListItem, ListItemText, Paper
+        List, ListItem, ListItemText, Paper, LinearProgress
       } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import axios from 'axios';
@@ -38,6 +38,7 @@ export const AddItem = ({setData, warehouseID, setInventory}) => {
     });
 
     const [open, setOpen] = useState(false);
+    const [loading, setLoading] = useState(false)
     const [itemList, setItemList] = useState([]);
     const [inventoryCount, setInventoryCount] = useState([])
     const item = useMemo(() => 
@@ -56,6 +57,7 @@ export const AddItem = ({setData, warehouseID, setInventory}) => {
         setOpen(false);
       };
     const onSubmit = async (data) => {
+        setLoading(true)
         setData(warehouse => {
             const arrays = [...warehouse.inventory, ...inventoryCount]
             const combine = arrays.reduce((acc, {_id, qty}) => {
@@ -75,14 +77,15 @@ export const AddItem = ({setData, warehouseID, setInventory}) => {
                 await axios.get(`http://localhost:9000/warehouses/${warehouseID}/inventory`)
                 .then(res => { setInventory(res.data.inventory)})
                 .catch(err => console.error(err));
-                setOpen(false);
                 await axios.get(`http://localhost:9000/warehouses/${warehouseID}`)
                 .then(res => { setData(res.data)})
                 .catch(err => console.error(err)); 
           }
-          catch (err) {
+            catch (err) {
             console.error(err);
-        } 
+            } 
+        setLoading(false);
+        setOpen(false);
         }, 1000);
     };
     return (
@@ -113,6 +116,7 @@ export const AddItem = ({setData, warehouseID, setInventory}) => {
                 </List>
               </Paper>
           </DialogContent>
+          {loading && (<LinearProgress/>)}
           <DialogActions>
             <Button onClick={handleClose}>Cancel</Button>
             <Button type="submit" onClick={handleSubmit(onSubmit)}>Submit</Button>

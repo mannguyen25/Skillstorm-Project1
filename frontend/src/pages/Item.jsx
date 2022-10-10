@@ -33,6 +33,8 @@ export const ItemList = () => {
         align: 'left',
         flex: 1,
         editable: true,
+        maxWidth: 100,
+        minWidth: 90,
         renderCell: (params) => {
             return (
                 <div>

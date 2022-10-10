@@ -1,6 +1,6 @@
 import {useState, useMemo} from 'react';
 import {Fab, Zoom, Button, TextField, Dialog, DialogActions, DialogContent, DialogTitle,
-        List, ListItem, ListItemText, Paper, Typography, LinearProgress, Box
+        List, ListItem, ListItemText, Paper, Typography, LinearProgress
       } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { useForm, Controller } from "react-hook-form";
@@ -55,8 +55,8 @@ export const WarehouseForm = ({setWarehouseList}) => {
         catch (err) {
           console.error(err);
       }
-    setLoading(false);
-    setOpen(false);
+      setLoading(false);
+      setOpen(false);
     }, 1000);
 
     };
