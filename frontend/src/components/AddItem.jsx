@@ -82,14 +82,14 @@ export const AddItem = ({setData, warehouseID, setInventory}) => {
                 })
                 await axios.get(`http://localhost:9000/warehouses/${warehouseID}/inventory`)
                 .then(res => { setInventory(res.data.inventory)})
-                await axios.get(`http://localhost:9000/warehouses/${warehouseID}`)
-                .then(res => { setData(res.data)})
                 handleClose();
           }
             catch (err) {
             // keep screen open and reset the inventory data prior to changes
             setError(true);
             setLoading(false);
+            await axios.get(`http://localhost:9000/warehouses/${warehouseID}`)
+            .then(res => { setData(res.data)}).catch(error => console.error(error))
             reset();
             }
         }, 1000);
