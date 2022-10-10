@@ -8,7 +8,7 @@ import axios from 'axios';
 import { useEffect } from "react";
 
 
-export const Actions = ({ params, rowId, setRowId, children }) => {
+export const Actions = ({ params, rowId, setRowId, children, setData }) => {
     const theme = useTheme();
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
@@ -18,11 +18,29 @@ export const Actions = ({ params, rowId, setRowId, children }) => {
             let result;
             if (children === 'warehouses'){
               const {capacity, inventory, _id} = params.row
-              result = await axios.put(`http://localhost:9000/${children}/${_id}`, {capacity, inventory})
+              try {
+                result = await axios.put(`http://localhost:9000/${children}/${_id}`, {capacity, inventory})
+              } catch (error) {
+                console.error(error)
+              }
             }
             else if (children === 'items') {
               const { _id, name, UPC, component, cost, brand, imgUrl} = params.row
-              result = await axios.put(`http://localhost:9000/${children}/${_id}`, {_id, name, UPC, component, cost, brand, imgUrl})           
+              try {
+                result = await axios.put(`http://localhost:9000/${children}/${_id}`, {_id, name, UPC, component, cost, brand, imgUrl})           
+              } catch (error) {
+                console.error(error)
+              }
+            }
+            else {
+              const {_id: {_id}, qty} = params.row
+              const warehouseData = await axios.get(`http://localhost:9000/warehouses/${children}`);
+              warehouseData.data.inventory = warehouseData.data.inventory.map(item => {
+                return item._id === _id ? {_id: _id, qty: qty} : item;
+              })
+              result = await axios.put(`http://localhost:9000/warehouses/${children}`, warehouseData.data);
+              await axios.get(`http://localhost:9000/warehouses/${children}`).then(res => setData(res.data)).catch(err => console.log(err));
+
             }
             if (result) {
                 setSuccess(true);

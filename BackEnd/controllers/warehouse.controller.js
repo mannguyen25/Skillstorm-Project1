@@ -1,3 +1,4 @@
+const { findById } = require('../models/Warehouse.model');
 const Warehouse = require('../models/Warehouse.model');
 // populate will automatically lookup the referred documents so long as there's a ref property
 const findAllWarehouses = async () => {
@@ -19,13 +20,22 @@ const findWarehouseById = async id => {
 
 const findWarehouseItems = async id => {
     try {
-        const warehouse = await Warehouse.findById(id).populate({ path: 'inventory._id', select: 'name' });
-        return warehouse.inventory;
+        const warehouse = await Warehouse.findById(id).populate('inventory._id');
+        return warehouse;
     } catch (err) {
         throw { status: 500, msg: err.message };
     }
 }
 
+const removeItemFromWarehouse = async (id, itemId) => {
+   try {
+    await Warehouse.updateOne({ _id: id }, { $pull: { inventory: { _id: itemId } } });
+    const warehouse = await findWarehouseById(id);
+    await updateWarehouse(id, warehouse);
+   } catch (error) {
+        throw { status: 400, msg: error};
+   }
+}
 
 const createWarehouse = async warehouseToSave => {
     try {
@@ -52,4 +62,4 @@ const updateWarehouse = async (id, warehouseToUpdate) => {
 
 
 const deleteWarehouse = async id => await Warehouse.findByIdAndDelete(id);
-module.exports = { findAllWarehouses, createWarehouse, findWarehouseById, updateWarehouse, deleteWarehouse,findWarehouseItems };
+module.exports = { findAllWarehouses, createWarehouse, findWarehouseById, updateWarehouse, deleteWarehouse,findWarehouseItems,removeItemFromWarehouse };

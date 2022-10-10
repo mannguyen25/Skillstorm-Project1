@@ -1,6 +1,7 @@
 const router = require('express').Router();
 const { findAllWarehouses, createWarehouse, findWarehouseById, 
-        updateWarehouse, deleteWarehouse, findWarehouseItems } = require('../controllers/warehouse.controller');
+        updateWarehouse, deleteWarehouse, findWarehouseItems,
+        removeItemFromWarehouse } = require('../controllers/warehouse.controller');
 
 
 // Find all Warehouses
@@ -26,7 +27,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // find all items in the warehouse
-router.get('/:warehouse_id/items', async (req, res) => {
+router.get('/:warehouse_id/inventory', async (req, res) => {
     try {
         const warehouse = await findWarehouseItems(req.params.warehouse_id);
         res.json(warehouse);
@@ -58,6 +59,16 @@ router.put('/:id', async (req, res) => {
     }
 });
 
+// Remove item from warehouse
+router.delete('/:id/inventory/:itemId', async (req, res) => {
+    try {
+        const warehouse = await removeItemFromWarehouse(req.params.id, req.params.itemId);
+        res.status(200).json(warehouse);
+    } catch (err) {
+        console.log(err);
+        res.status(err?.status).json(err);
+    }
+});
 
 // delete an warehouse
 router.delete('/:id', async (req, res) => {

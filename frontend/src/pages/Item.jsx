@@ -176,6 +176,9 @@ export const ItemList = () => {
             '& .MuiDataGrid-cell:hover': {
               color: 'primary.main',
             },
+            '&.MuiDataGrid-root--densityStandard .MuiDataGrid-cell': {
+              py: 2,
+            },
           }}
           getRowHeight={() => 'auto'}
           pageSize={pageSize}

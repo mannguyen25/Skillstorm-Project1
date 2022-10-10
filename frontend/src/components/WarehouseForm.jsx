@@ -1,6 +1,6 @@
 import {useState, useMemo} from 'react';
 import {Fab, Zoom, Button, TextField, Dialog, DialogActions, DialogContent, DialogTitle,
-        List, ListItem, ListItemText, IconButton, Box,
+        List, ListItem, ListItemText, Paper, Typography
       } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import RemoveIcon from '@mui/icons-material/Remove';
@@ -110,17 +110,14 @@ export const WarehouseForm = ({setWarehouseList}) => {
                     />
                   )}
                 />
-                <Controller
-                  name='capacity'
-                  control={control}
-                  render={({ field: { onChange, value }, fieldState: { error } }) => (
-                    <List sx={{'.css-10hburv-MuiTypography-root' : {marginRight: '10ch', maxWidth: '50ch'},
-                    '.MuiListItem-root': {  marginBottom: 3},
+                <Typography>Add Items</Typography>
+                <Paper style={{maxHeight: 500, overflow: 'auto'}}>
+                <List sx={{'.css-10hburv-MuiTypography-root' : {marginRight: '10ch', maxWidth: '50ch'},
+                                    '.MuiListItem-root': {  marginBottom: 3},
                   }}>
-                      {itemList.map(item => <Item item={item} setInventory={setInventory} key={item._id}/>)}
-                    </List>
-                  )}
-                />
+                    {itemList.map(item => <Item item={item} setInventory={setInventory} key={item._id}/>)}
+                </List>
+              </Paper>
           </DialogContent>
           <DialogActions>
             <Button onClick={handleClose}>Cancel</Button>
