@@ -32,7 +32,7 @@ const Item = ({item: {_id, name, imgUrl, cost}, setInventoryCount, setError}) =>
 }
 
 export const AddItem = ({setData, warehouseID, setInventory}) => {
-    const { handleSubmit, } = useForm({
+    const { handleSubmit, reset} = useForm({
         defaultValues: {
             inventory: []
         },
@@ -58,9 +58,8 @@ export const AddItem = ({setData, warehouseID, setInventory}) => {
       };
     
     const handleClose = () => {
-        setError(false);
-        setLoading(false);
-        setOpen(false);
+      setError(false);
+      setOpen(false);
       };
     const onSubmit = async (data) => {
         setLoading(true)
@@ -72,25 +71,26 @@ export const AddItem = ({setData, warehouseID, setInventory}) => {
                 return acc;
               }, {});
             warehouse.inventory = Object.values(combine);
-            data.inventory = warehouse.inventory.filter(item => item.qty != 0);
+            data.inventory = warehouse.inventory.filter(item => item.qty !== 0);
             return warehouse;
         })
         setTimeout(async () => {
             try{
+                console.log(data.inventory);
                 await axios.put(`http://localhost:9000/warehouses/${warehouseID}`, {
                 inventory: data.inventory
                 })
                 await axios.get(`http://localhost:9000/warehouses/${warehouseID}/inventory`)
                 .then(res => { setInventory(res.data.inventory)})
-                .catch(() => setError(true));
                 await axios.get(`http://localhost:9000/warehouses/${warehouseID}`)
                 .then(res => { setData(res.data)})
-                .catch(() => setError(true)); 
                 handleClose();
           }
             catch (err) {
+            // keep screen open and reset the inventory data prior to changes
             setError(true);
             setLoading(false);
+            reset();
             }
         }, 1000);
     };
