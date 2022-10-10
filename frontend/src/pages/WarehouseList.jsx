@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
-import { Box, Typography, Stack, IconButton } from "@mui/material";
+import { Box, Typography, Stack, IconButton, LinearProgress } from "@mui/material";
 import { DataGrid } from '@mui/x-data-grid';
 import { renderProgress, Actions } from "../components";
 import { useTheme } from '@mui/material/styles';
@@ -8,11 +8,12 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import { WarehouseForm } from "../components";
 
 export const WarehouseList = () => {
+  const [loading, setLoading] = useState(false);
   const [warehouseList, setWarehouseList] = useState([]);
   const [rowId, setRowId] = useState(null);
   const [pageSize, setPageSize] = useState(25);
   const theme = useTheme();
-  
+
   useEffect(() => {
       axios.get('http://localhost:9000/warehouses')
           .then(res => { setWarehouseList(res.data)})
@@ -78,15 +79,24 @@ export const WarehouseList = () => {
 
 
   const handleDeleteRow = async ({params}) => {
-    await axios.delete(`http://localhost:9000/warehouses/${params.row._id}`)
-    .then(() => {
-      setWarehouseList(warehouseList.filter(warehouse => params.row._id !== warehouse._id))
-    })
-    .catch(err => console.error(err));
+    setLoading(true);
+    setInterval(async() => {
+      await axios.delete(`http://localhost:9000/warehouses/${params.row._id}`)
+      .then(() => {
+        setWarehouseList(warehouseList => warehouseList.filter(item => params.row._id !== item._id))
+      })
+      .catch(err => console.error(err));
+      setLoading(false);
+    }, 2000);
   };
 
     return (
       <>
+      {loading && (
+        <Box sx={{ width: '100%' }}>
+          <LinearProgress />
+        </Box>
+      )}
         <Box      
         sx = {{
           margin: '2rem auto',

@@ -122,7 +122,7 @@ export const ItemList = () => {
     setInterval(async() => {
       await axios.delete(`http://localhost:9000/items/${params.row._id}`)
       .then(() => {
-        setItemList(itemList.filter(item => params.row._id !== item._id))
+        setItemList(itemList => itemList.filter(item => params.row._id !== item._id))
       })
       .catch(err => console.error(err));
       setLoading(false);

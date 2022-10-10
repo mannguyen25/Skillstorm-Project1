@@ -8,7 +8,6 @@ import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from '@hookform/resolvers/yup';
 import {warehouseSchema} from '../validation/warehouseSchema'
 import axios from 'axios';
-import { idID } from '@mui/material/locale';
 
 const Item = ({item: {_id, name, imgUrl, cost}, setInventory}) => {
   return (
@@ -22,7 +21,7 @@ const Item = ({item: {_id, name, imgUrl, cost}, setInventory}) => {
         onChange={e => setInventory(
           inventory => inventory.map(
             item => {
-              return item._id === _id? {...item, qty: e.target.value} : item
+              return item._id === _id? {...item, qty: parseInt(e.target.value)} : item
             }
           ))}
       />
@@ -45,11 +44,14 @@ export const WarehouseForm = ({setWarehouseList}) => {
 
     const onSubmit = async data => {
       try{
-        data.inventory = inventory;
+        data.inventory = inventory.filter(item => item.qty != 0);
         console.log(data);
-        // const res = await axios.post('http://localhost:9000/warehouses', data)
-        // setWarehouseList(warehouseList => [...warehouseList, res.data]);
-        // setOpen(false);
+        const res = await axios.post('http://localhost:9000/warehouses', {
+          capacity: data.capacity,
+          inventory: data.inventory
+        })
+        setWarehouseList(warehouseList => [...warehouseList, res.data]);
+        setOpen(false);
       }
       catch (err) {
         console.error(err);
