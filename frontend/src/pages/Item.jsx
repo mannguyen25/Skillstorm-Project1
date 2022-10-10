@@ -119,7 +119,7 @@ export const ItemList = () => {
     */
   const handleDeleteRow = async ({params}) => {
     setLoading(true);
-    setInterval(async() => {
+    setTimeout(async() => {
       await axios.delete(`http://localhost:9000/items/${params.row._id}`)
       .then(() => {
         setItemList(itemList => itemList.filter(item => params.row._id !== item._id))

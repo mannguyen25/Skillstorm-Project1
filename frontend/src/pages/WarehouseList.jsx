@@ -80,7 +80,7 @@ export const WarehouseList = () => {
 
   const handleDeleteRow = async ({params}) => {
     setLoading(true);
-    setInterval(async() => {
+    setTimeout(async() => {
       await axios.delete(`http://localhost:9000/warehouses/${params.row._id}`)
       .then(() => {
         setWarehouseList(warehouseList => warehouseList.filter(item => params.row._id !== item._id))

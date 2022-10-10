@@ -1,9 +1,8 @@
 import {useState, useMemo} from 'react';
 import {Fab, Zoom, Button, TextField, Dialog, DialogActions, DialogContent, DialogTitle,
-        List, ListItem, ListItemText, Paper, Typography
+        List, ListItem, ListItemText, Paper, Typography, LinearProgress, Box
       } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
-import RemoveIcon from '@mui/icons-material/Remove';
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from '@hookform/resolvers/yup';
 import {warehouseSchema} from '../validation/warehouseSchema'
@@ -43,20 +42,25 @@ export const WarehouseForm = ({setWarehouseList}) => {
     });
 
     const onSubmit = async data => {
-      try{
-        data.inventory = inventory.filter(item => item.qty != 0);
-        console.log(data);
-        const res = await axios.post('http://localhost:9000/warehouses', {
-          capacity: data.capacity,
-          inventory: data.inventory
-        })
-        setWarehouseList(warehouseList => [...warehouseList, res.data]);
-        setOpen(false);
+      setLoading(true)
+      data.inventory = inventory.filter(item => item.qty != 0);
+      setTimeout(async () => {
+        try{
+          const res = await axios.post('http://localhost:9000/warehouses', {
+            capacity: data.capacity,
+            inventory: data.inventory
+          })
+          setWarehouseList(warehouseList => [...warehouseList, res.data]);
+        }
+        catch (err) {
+          console.error(err);
       }
-      catch (err) {
-        console.error(err);
-    }
+    setLoading(false);
+    setOpen(false);
+    }, 1000);
+
     };
+    const [loading, setLoading] = useState(false);
     const [open, setOpen] = useState(false);
     const [itemList, setItemList] = useState([]);
     const [inventory, setInventory] = useState([])
@@ -119,6 +123,8 @@ export const WarehouseForm = ({setWarehouseList}) => {
                 </List>
               </Paper>
           </DialogContent>
+          {loading && (
+            <LinearProgress/>)}
           <DialogActions>
             <Button onClick={handleClose}>Cancel</Button>
             <Button type="submit" onClick={handleSubmit(onSubmit)} disabled={!isValid}>Submit</Button>

@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
 import { Box, Typography, Stack, IconButton, Card, CardMedia, LinearProgress } from "@mui/material";
 import { DataGrid } from '@mui/x-data-grid';
-import { Actions } from "../components";
+import { Actions, AddItem } from "../components";
 import { useTheme } from '@mui/material/styles';
 import DeleteIcon from '@mui/icons-material/Delete';
 
@@ -13,12 +13,12 @@ export const Warehouse = () => {
   const [rowId, setRowId] = useState(null);
   const [pageSize, setPageSize] = useState(25);
   const theme = useTheme();
-
+  const warehouseID = window.location.pathname.split('/')[2];
   useEffect(() => {
-        axios.get(`http://localhost:9000/warehouses/${window.location.pathname.split('/')[2]}/inventory`)
+        axios.get(`http://localhost:9000/warehouses/${warehouseID}/inventory`)
           .then(res => { setInventory(res.data.inventory)})
           .catch(err => console.error(err)); 
-        axios.get(`http://localhost:9000/warehouses/${window.location.pathname.split('/')[2]}`)
+        axios.get(`http://localhost:9000/warehouses/${warehouseID}`)
           .then(res => { setData(res.data)})
           .catch(err => console.error(err)); 
   }, []);
@@ -112,8 +112,8 @@ export const Warehouse = () => {
         minWidth: 150,
         renderCell: params => (
           <Stack direction="row" spacing={2}>
-            <Actions {...{params, rowId, setRowId, setData}}>{`${data._id}`}</Actions>
-            <IconButton onClick={() => handleDeleteRow({...{params}})}><DeleteIcon/></IconButton>
+            <Actions {...{params, rowId, setRowId, setData}}>{`${warehouseID}`}</Actions>
+          <IconButton onClick={() => {handleDeleteRow({...{params}})}}><DeleteIcon/></IconButton>
           </Stack>
         )
       },
@@ -135,18 +135,18 @@ export const Warehouse = () => {
 //    need to fix this delete, remove from inventory set
   const handleDeleteRow = async ({params}) => {
     setLoading(true);
-    setInterval(async() => {
-    setInventory(items => items.filter(item => params.row._id._id !== item._id._id))
+    setTimeout(async() => {
     try {
-        await axios.delete(`http://localhost:9000/warehouses/${data._id}/inventory/${params.row._id._id}`)
-        await axios.get(`http://localhost:9000/warehouses/${data._id}`)
+        await axios.delete(`http://localhost:9000/warehouses/${warehouseID}/inventory/${params.row._id._id}`)
+        setInventory(items => items.filter(item => params.row._id._id !== item._id._id))
+        await axios.get(`http://localhost:9000/warehouses/${warehouseID}`)
         .then(res => {setData(res.data)})
         .catch(err => console.error(err)); 
     } catch (error) {
         console.log(error)
     }
-      setLoading(false);
-    }, 2000);
+    setLoading(false);
+    }, 1000);
   };
 
     return (
@@ -228,6 +228,7 @@ export const Warehouse = () => {
           onCellEditStop={(params) => setRowId(params.id)}
           columnVisibilityModel={{_id: false}}
           />
+          <AddItem setData={setData} warehouseID={warehouseID} setInventory={setInventory}/>
         </Box>
       </>
 

@@ -1,6 +1,7 @@
 import {useState} from 'react';
 import {Fab, Zoom, Button, TextField, Dialog, DialogActions, DialogContent, DialogTitle,
-        OutlinedInput, InputLabel, InputAdornment, FormControl, MenuItem, Select} from '@mui/material';
+        OutlinedInput, InputLabel, InputAdornment, FormControl, MenuItem, Select,
+      LinearProgress} from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -8,6 +9,7 @@ import {itemSchema} from '../validation/ItemSchema'
 import axios from 'axios';
 
 export const ItemForm = ({setItemList}) => {
+  const [loading, setLoading] = useState(false);
     const { handleSubmit, control, formState: { isValid }} = useForm({
         defaultValues: {
             name: '',
@@ -21,14 +23,18 @@ export const ItemForm = ({setItemList}) => {
         mode: "onChange"
     });
     const onSubmit = async data => {
-      try{
-        const res = await axios.post('http://localhost:9000/items', data)
-        setItemList(itemList => [...itemList, res.data]);
-        setOpen(false);
+      setLoading(true)
+      setTimeout(async () => {
+        try{
+          const res = await axios.post('http://localhost:9000/items', data)
+          setItemList(itemList => [...itemList, res.data]);
+        }
+        catch (err) {
+          console.error(err);
       }
-      catch (err) {
-        console.error(err);
-    }
+      setLoading(false)
+      setOpen(false);
+      }, 1000);
     };
     const [open, setOpen] = useState(false);
     const handleClickOpen = () => {
@@ -170,6 +176,7 @@ export const ItemForm = ({setItemList}) => {
           )}
       />
     </DialogContent>
+    {loading && (<LinearProgress/>)}
     <DialogActions>
     <Button onClick={handleClose}>Cancel</Button>
     <Button type="submit" onClick={handleSubmit(onSubmit)} disabled={!isValid}>Submit</Button>
